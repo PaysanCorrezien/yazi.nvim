@@ -2,9 +2,7 @@
 
 local open_floating_window = require("yazi.window").open_floating_window
 local project_root_dir = require("yazi.utils").project_root_dir
-local get_root = require("yazi.utils").get_root
 local is_yazi_available = require("yazi.utils").is_yazi_available
-local is_symlink = require("yazi.utils").is_symlink
 
 YAZI_BUFFER = nil
 YAZI_LOADED = false
@@ -13,18 +11,23 @@ local prev_win = -1
 local win = -1
 local buffer = -1
 
-local output_path = "/tmp/yazi_filechosen"
+local output_path = vim.fn.stdpath("data") .. "\\yazi_filechosen"
 
 local function file_exists(name)
-	local f=io.open(name,"r")
-	if f~=nil then io.close(f) return true else return false end
+	local f = io.open(name, "r")
+	if f ~= nil then
+		io.close(f)
+		return true
+	else
+		return false
+	end
 end
 
 local function on_exit(job_id, code, event)
 	if code ~= 0 then
 		return
 	end
-	
+
 	-- test
 	-- local file=io.open("/tmp/test.txt","w+")
 	-- io.output(file)
@@ -42,7 +45,7 @@ local function on_exit(job_id, code, event)
 		if code == 0 and file_exists(output_path) == true then
 			local chosen_file = vim.fn.readfile(output_path)[1]
 			if chosen_file then
-				vim.cmd(string.format('edit %s', chosen_file))
+				vim.cmd(string.format("edit %s", chosen_file))
 			end
 		end
 		prev_win = -1
@@ -73,7 +76,7 @@ local function yazi(path)
 	end
 
 	prev_win = vim.api.nvim_get_current_win()
-	path = vim.fn.expand('%:p:h')
+	path = vim.fn.expand("%:p:h")
 
 	win, buffer = open_floating_window()
 
